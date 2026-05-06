@@ -508,6 +508,7 @@ def main():
         args.outdir = str(script_dir / "instances" / "pathwyse")
 
     converted = 0
+    used_scales: dict[str, int] = {}  # ext -> cost_scale actually applied
     for path in args.paths:
         p = Path(path)
         if p.is_file():
@@ -517,6 +518,10 @@ def main():
             if out:
                 print(f"  {p.name} -> {out}")
                 converted += 1
+                used_scales[p.suffix] = (
+                    args.cost_scale if args.cost_scale is not None
+                    else DEFAULT_COST_SCALES[p.suffix]
+                )
         elif p.is_dir():
             for ext in ("*.sppcc", "*.vrp", "*.graph"):
                 for f in sorted(p.rglob(ext)):
@@ -526,12 +531,21 @@ def main():
                     if out:
                         print(f"  {f.name} -> {out}")
                         converted += 1
+                        used_scales[f.suffix] = (
+                            args.cost_scale if args.cost_scale is not None
+                            else DEFAULT_COST_SCALES[f.suffix]
+                        )
         else:
             print(f"  Warning: {path} not found, skipping", file=sys.stderr)
 
-    cost_scale_label = (
-        "auto" if args.cost_scale is None else str(args.cost_scale)
-    )
+    if args.cost_scale is None:
+        # Show the per-extension scales actually applied this run.
+        scale_str = ", ".join(
+            f"{ext.lstrip('.')}={s}" for ext, s in sorted(used_scales.items())
+        ) or "auto"
+        cost_scale_label = f"auto ({scale_str})" if used_scales else "auto"
+    else:
+        cost_scale_label = str(args.cost_scale)
     print(
         f"\nConverted {converted} instances to {args.outdir} "
         f"(cost_scale={cost_scale_label}, time_scale={args.time_scale}, "

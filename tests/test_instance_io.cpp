@@ -202,3 +202,25 @@ TEST_CASE("Solve through parser: tiny.graph with ng-path") {
     REQUIRE(!paths.empty());
     CHECK(paths[0].reduced_cost == doctest::Approx(9.0));
 }
+
+TEST_CASE("Solve through parser: tiny.sppcc with computed ng-path (k=2)") {
+    // End-to-end test: load .sppcc → compute_ng_neighbors (skip-source policy
+    // + sink ng-set = {sink}) → NgPathResource → solve. Verifies the new
+    // ng-set construction policy doesn't break solver correctness.
+    auto inst = io::load_sppcc(fixture("tiny.sppcc"));
+    io::compute_ng_neighbors(inst, /*k=*/2);
+    auto pv = inst.problem_view();
+
+    NgPathResource ng(pv.n_vertices, pv.n_arcs, pv.arc_from, pv.arc_to, inst.ng_neighbors);
+    using NgPack = ResourcePack<NgPathResource>;
+
+    Solver<NgPack> solver(pv, make_resource_pack(std::move(ng)),
+                          {.bucket_steps = {10.0, 1.0}, .theta = 1e9});
+    solver.build();
+    solver.set_stage(Stage::Exact);
+    auto paths = solver.solve();
+
+    REQUIRE(!paths.empty());
+    // 0→2→4(sink): dist[0][2] + dist[2][0] = 5 + 5 = 10 (same as no-ng case)
+    CHECK(paths[0].reduced_cost == doctest::Approx(10.0));
+}

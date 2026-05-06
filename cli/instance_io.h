@@ -359,8 +359,9 @@ inline Instance load_roberti_vrp(const std::string& path) {
 /// Otherwise ranks by reduced cost (ng_cost or arc cost).
 ///
 /// Source and sink are always excluded from the customer ng-sets (the depot
-/// is never a real revisit candidate, and the sink is terminal). The sink's
-/// own ng-set is left as {sink}.
+/// is never a real revisit candidate, and the sink is terminal) — applied in
+/// both the dense (sppcc/vrp pairwise-metric) and sparse (graph outgoing-arc)
+/// branches. The sink's own ng-set is left as {sink}.
 inline void compute_ng_neighbors(Instance& inst, int k = 8, bool use_distance = false) {
     int nv = inst.n_vertices;
     inst.ng_neighbors.resize(nv);
@@ -437,6 +438,12 @@ inline void compute_ng_neighbors(Instance& inst, int k = 8, bool use_distance = 
         inst.ng_neighbors[v].clear();
         inst.ng_neighbors[v].push_back(v);
         for (auto& [to, cost] : out) {
+            // Skip source/sink as ng-candidates (terminals are never real
+            // intermediate-revisit targets) — keeps parity with the dense
+            // branch and with patched Pathwyse buildNG.
+            if (to == inst.source || to == inst.sink) {
+                continue;
+            }
             bool dup = false;
             for (int w : inst.ng_neighbors[v]) {
                 if (w == to) {
@@ -452,6 +459,11 @@ inline void compute_ng_neighbors(Instance& inst, int k = 8, bool use_distance = 
                 break;
             }
         }
+    }
+    // Sink is terminal — its ng-set is {sink}.
+    if (inst.sink >= 0 && inst.sink < nv) {
+        inst.ng_neighbors[inst.sink].clear();
+        inst.ng_neighbors[inst.sink].push_back(inst.sink);
     }
 }
 

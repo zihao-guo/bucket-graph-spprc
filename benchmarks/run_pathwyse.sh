@@ -156,16 +156,24 @@ output/write = 0
 SETTINGS
 }
 
-# Read cost_scale from the sidecar next to a converted .txt. Falls back to 1
-# for legacy files without a sidecar.
+# Read cost_scale from the sidecar next to a converted .txt. Hard-errors if
+# the sidecar is missing — silently falling back to 1 would under-scale the
+# recovered objective by up to 1000× under the per-extension defaults
+# (sppcc=1, vrp=1000, graph=1000) and corrupt pathwyse.csv.
 read_cost_scale() {
   local pw_file="$1"
   local scales_file="${pw_file%.txt}.scales"
-  local val=""
-  if [[ -f "$scales_file" ]]; then
-    val="$(awk -F= '$1=="cost_scale" {print $2; exit}' "$scales_file")"
+  if [[ ! -f "$scales_file" ]]; then
+    echo "Error: missing sidecar $scales_file (regenerate via convert_to_pathwyse.py)" >&2
+    exit 1
   fi
-  echo "${val:-1}"
+  local val
+  val="$(awk -F= '$1=="cost_scale" {print $2; exit}' "$scales_file")"
+  if [[ -z "$val" ]]; then
+    echo "Error: $scales_file has no cost_scale entry" >&2
+    exit 1
+  fi
+  echo "$val"
 }
 
 # ── Write CSV header ──

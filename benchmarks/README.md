@@ -170,11 +170,16 @@ Patches for both are checked in under `benchmarks/patches/`:
 bgspprc itself does **not** include 2-cycle elimination — it implements the
 paper's pure-ng relaxation. The patches make Pathwyse match.
 
-Apply both before running the comparison sweep:
+Apply both before running the comparison sweep. The patches are
+line-anchored against upstream Pathwyse commit
+[`d53c01b`](https://github.com/pathwyse/pathwyse/commit/d53c01b) (HEAD as
+of this comparison's authoring) — `git checkout` it first if upstream has
+moved on:
 
 ```bash
 ./benchmarks/run_pathwyse.sh   # one-time clone+build into build/pathwyse
 ( cd build/pathwyse \
+  && git checkout d53c01b \
   && patch -p1 < ../../benchmarks/patches/pathwyse-skip-terminals-in-buildng.patch \
   && patch -p1 < ../../benchmarks/patches/pathwyse-pure-ng.patch \
   && cmake --build build -j )
