@@ -378,7 +378,8 @@ inline void compute_ng_neighbors(Instance& inst, int k = 8, bool use_distance = 
     if (!metric.empty()) {
         // Complete-graph instances: use pairwise metric over original N nodes.
         // ng-sets are defined over original nodes 0..N-1.
-        // Sink (= source copy) gets same ng-set as source.
+        // The sink (a depot copy) is terminal — its ng-set is set to {sink}
+        // after the loop.
         int N = inst.n_orig;
 
         for (int v = 0; v < N; ++v) {

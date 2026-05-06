@@ -126,6 +126,13 @@ TEST_CASE("compute_ng_neighbors: on sppcc instance with k=2") {
         CHECK(inst.ng_neighbors[v].size() == 2);
         CHECK(inst.ng_neighbors[v][0] == v);  // self is first
     }
+    // Source (depot, vertex 0) must not appear as an ng-candidate of any
+    // customer (it's the start/end, never an intermediate-revisit target).
+    for (int v = 1; v < 4; ++v) {
+        for (int w : inst.ng_neighbors[v]) {
+            CHECK(w != inst.source);
+        }
+    }
     // Sink is terminal — its ng-set is {sink} only.
     REQUIRE(inst.ng_neighbors[4].size() == 1);
     CHECK(inst.ng_neighbors[4][0] == 4);

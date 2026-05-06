@@ -126,9 +126,10 @@ fi
 
 # ── Pathwyse settings file for ng-path ──
 # Pathwyse reads every numeric field with std::stoi (truncates at the decimal
-# point). convert_to_pathwyse.py pre-multiplies EDGE_COST by cost_scale
-# (default 1e6) and writes a sidecar `.scales` file; we read it per-instance
-# and divide the reported Obj by cost_scale to recover the true objective.
+# point). convert_to_pathwyse.py pre-multiplies EDGE_COST by a per-extension
+# cost_scale (sppcc=1, vrp=1000, graph=1000) and writes a sidecar `.scales`
+# file; we read it per-instance and divide the reported Obj by cost_scale
+# to recover the true objective.
 # `problem/scaling` is forced to 1.0 (no additional scaling by Pathwyse)
 # since our own pre-scaling already carries all the precision we need.
 write_pathwyse_settings() {
@@ -148,8 +149,8 @@ algo/default/dssr = off
 algo/default/ng = ${ng_mode}
 algo/default/ng/set_size = ${ng_val}
 algo/default/reserve = 10000000
-algo/default/use_visited = ${USE_VISITED:-1}
-algo/default/compare_unreachables = ${COMPARE_UNREACHABLES:-1}
+algo/default/use_visited = 1
+algo/default/compare_unreachables = 1
 data_collection/level = -1
 output/write = 0
 SETTINGS

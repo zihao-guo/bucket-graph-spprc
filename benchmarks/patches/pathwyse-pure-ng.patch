@@ -1,4 +1,4 @@
-Subject: [PATCH] PWDefault: pure-ng mode (disable 2-cycle elim)
+Subject: [PATCH] PWDefault: disable hardcoded 2-cycle elimination
 
 PathWyse's PWDefault enforces "no 2-cycles" (v→u→v) at both extension time
 and at bidirectional join, on top of the ng-path relaxation. The classic
@@ -15,8 +15,9 @@ Reproducible difference (instance A-n80-k10-14 from spprclib, ng/set_size=8):
   unpatched: Obj = -124125 (3-cycle (75,47,65)×4, 2-cycles forbidden)
   patched:   Obj = -135733 (also exploits (78,68,78) and similar 2-cycles)
 
-The patched value matches `bgspprc bidir --ng 8 --ng-metric cost` with the
-default `BGSPPRC_NO_2_CYCLE=OFF` build (paper-faithful pure ng).
+The patched value matches `bgspprc bidir --ng 8 --ng-metric cost` from the
+default build (bgspprc does not implement 2-cycle elimination — it
+implements the paper's pure-ng relaxation directly).
 
 --- a/src/core/algorithms/dynamic_programming/PW_default/PW_default.cpp
 +++ b/src/core/algorithms/dynamic_programming/PW_default/PW_default.cpp

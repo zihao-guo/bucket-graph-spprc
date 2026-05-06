@@ -332,8 +332,16 @@ def write_pathwyse(
     max_abs_cost = max((abs(float(a[2])) for a in inst["arcs"]), default=0.0)
     if max_abs_cost * cost_scale > _INT32_MAX:
         raise OverflowError(
-            f"cost_scale={cost_scale} overflows int32 for "
+            f"cost_scale={cost_scale} overflows int32 per-arc for "
             f"|cost|={max_abs_cost} on instance {inst['name']}"
+        )
+    # Soft path-sum bound: a worst-case all-customers path has nv-1 arcs;
+    # if even that saturates int32 we'll silently truncate inside Pathwyse.
+    if max_abs_cost * cost_scale * max(nv - 1, 1) > _INT32_MAX:
+        raise OverflowError(
+            f"cost_scale={cost_scale} overflows int32 for "
+            f"path-sum bound (|cost|={max_abs_cost}, nv={nv}) on "
+            f"instance {inst['name']}; reduce --cost-scale"
         )
 
     # Determine resources
