@@ -205,10 +205,11 @@ for file in "${FILES[@]}"; do
   fi
 
   # Parse output: "name  type  n=NN  arcs=NN  cost=X.XXX  paths=N  X.Xms"
+  # Skip the version banner ("bgspprc <hash>") and any other non-result lines
+  # by grabbing the first line that contains `cost=`.
   cost="" paths="" time_ms=""
   if [[ "$status" == "OK" && -n "$output" ]]; then
-    # Extract from first non-path line
-    line="$(echo "$output" | head -1)"
+    line="$(echo "$output" | awk '/cost=/{print; exit}')"
     if [[ "$line" =~ cost=([0-9.eE+-]+) ]]; then
       cost="${BASH_REMATCH[1]}"
     fi
