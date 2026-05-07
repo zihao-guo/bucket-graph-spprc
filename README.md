@@ -100,9 +100,11 @@ Pathwyse, both in pure-ng mode.
 
 Both solvers reach the same optimal reduced cost on `.sppcc`/`.vrp`
 modulo cost-scale rounding (verified per-row in `comparison_pathwyse.csv`).
-Pathwyse needs patches against upstream `d53c01b` —
-see [`benchmarks/patches/`](benchmarks/patches/) (auto-applied by
-`run_pathwyse.sh`).
+bgspprc is **1.3×–2.4× faster** than Pathwyse by sgm across the six
+(set, ng) cells (ratio = `(pathwyse_sgm + 1) / (bgspprc_sgm + 1)`,
+shift = 1 s, TL → 120 s on both sides). Pathwyse needs patches against
+upstream `d53c01b` — see [`benchmarks/patches/`](benchmarks/patches/)
+(auto-applied by `run_pathwyse.sh`).
 
 ## Use as a Library
 
