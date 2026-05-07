@@ -34,15 +34,14 @@ benchmarks/fetch_instances.sh
 Sample output:
 
 ```
-bgspprc 1e749ce
+bgspprc bee103a
 bgspprc: executor=StdThread  bidir=parallel
-A-n54-k7-149   sppcc  n=55  arcs=2862  theta=-1e-06  cost=-56718.000  paths=1  18.1ms
+A-n54-k7-149                    sppcc  n=55    arcs=2862    theta=-1e-06  cost=-56718.000  paths=1    26.5ms
   0 34 41 25 47 25 47 25 41 34 54
   n_buckets=550  n_labels_created=113210  n_dominance_checks=128977  n_non_dominated=12059
-  n_dominance_checks_fw=53407  n_dominance_checks_bw=75570
-  n_non_dominated_fw=4854  n_non_dominated_bw=7205
+  n_dominance_checks_fw=53407  n_dominance_checks_bw=75570  n_non_dominated_fw=4854  n_non_dominated_bw=7205
   n_fixed_buckets=0  n_eliminated_arcs=0  label_state_bytes=1
-  timing:  fw=5.721ms  bw=9.660ms  completion=0.987ms  concat=2.291ms  paths=1.109ms  sum=19.768ms
+  timing:  fw=5.570ms  bw=17.709ms  completion=1.009ms  concat=2.562ms  paths=1.167ms  sum=28.018ms
 ```
 
 Supported instance formats: `.sppcc` (SPPCC), `.vrp` (Roberti VRPTW), `.graph` (Solomon RCSPP).
