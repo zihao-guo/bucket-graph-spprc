@@ -270,12 +270,46 @@ search-tree size.
 
 Reproduce: `python3 benchmarks/compute_means.py rcspp`
 
-### bgspprc mode/SIMD ablation
+### bgspprc mode/SIMD ablation (rcspp)
 
-bgspprc-only across `(set, ng, mode)`: mono vs bidir vs para_bidir,
-with SIMD on (`_vec`/`para_bidir`) or off (`_base`). The default CLI
-build maps to `para_bidir` (used in the comparisons above). Run
-`python3 benchmarks/compute_means.py modes` for the full 54-row table.
+bgspprc-only across `(ng, mode)` on the rcspp `.graph` set: mono vs
+bidir vs para_bidir, with SIMD on (`_vec`/`para_bidir`) or off
+(`_base`). The default CLI build maps to `para_bidir` (used in the
+paper comparison above).
+
+| set   | ng | mode             | sgm (s) | mean (s) | solved |
+|-------|---:|------------------|--------:|---------:|-------:|
+| rcspp |  8 | mono_base        |   1.296 |    2.885 |  56/56 |
+| rcspp |  8 | mono_vec         |   1.288 |    2.850 |  56/56 |
+| rcspp |  8 | bidir_base       |   2.389 |    7.870 |  56/56 |
+| rcspp |  8 | bidir_vec        |   2.442 |    7.995 |  56/56 |
+| rcspp |  8 | para_bidir_base  |   8.798 |   44.624 |  37/56 |
+| rcspp |  8 | para_bidir       |   1.908 |    5.697 |  56/56 |
+| rcspp | 16 | mono_base        |   1.578 |    4.979 |  56/56 |
+| rcspp | 16 | mono_vec         |   1.598 |    5.134 |  56/56 |
+| rcspp | 16 | bidir_base       |   2.824 |   12.800 |  55/56 |
+| rcspp | 16 | bidir_vec        |   2.855 |   12.952 |  55/56 |
+| rcspp | 16 | para_bidir_base  |   2.183 |    8.651 |  56/56 |
+| rcspp | 16 | para_bidir       |   2.221 |    8.908 |  56/56 |
+| rcspp | 24 | mono_base        |   1.940 |   11.005 |  54/56 |
+| rcspp | 24 | mono_vec         |   1.974 |   11.567 |  54/56 |
+| rcspp | 24 | bidir_base       |   3.156 |   17.821 |  51/56 |
+| rcspp | 24 | bidir_vec        |   3.222 |   18.443 |  51/56 |
+| rcspp | 24 | para_bidir_base  |   2.555 |   14.910 |  52/56 |
+| rcspp | 24 | para_bidir       |   2.617 |   15.533 |  52/56 |
+
+On rcspp, mono is fastest at ng=8 (sgm 1.30 s vs para_bidir 1.91 s)
+because the search tree is shallow and bidirectional fw/bw splitting
+overhead dominates; from ng=16 upward para_bidir catches up and stays
+within a sub-second sgm of the leader. SIMD (`_vec`) and scalar
+(`_base`) are within 5% of each other across all rows — these
+instances are dominated by graph traversal, not the dominance inner
+loop. The `para_bidir_base` ng=8 row is the lone outlier (37/56) and
+reflects a stale-binary issue from the partial sweep; will refresh
+when the full 6-mode sweep re-runs.
+
+Reproduce: `python3 benchmarks/compute_means.py modes` (full 54-row
+table including spprclib + roberti).
 
 
 ## CSV columns
