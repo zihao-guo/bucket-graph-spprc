@@ -270,18 +270,7 @@ without a suffix is the SIMD-on variant to match the default CLI build).
 Reproduce:
 
 ```bash
-python3 -c '
-import csv, math, collections
-rows = list(csv.DictReader(open("benchmarks/bgspprc.csv")))
-canon = lambda s: {"ng8":"rcspp","ng16":"rcspp","ng24":"rcspp"}.get(s, s)
-g = collections.defaultdict(list)
-for r in rows: g[(canon(r["set"]), r["ng"], r["mode"])].append(r)
-for k in sorted(g):
-    ts = [120.0 if r["cost"]=="" else float(r["time_s"]) for r in g[k]]
-    to = sum(1 for r in g[k] if r["cost"]=="")
-    sgm = math.exp(sum(math.log(t+1) for t in ts)/len(ts))-1
-    print(f"{k[0]:<10}{k[1]:<4}{k[2]:<12}{sgm:>10.3f}{max(ts):>10.3f}{to:>5}")
-'
+python3 benchmarks/compute_means.py runtime
 ```
 
 ### Paper comparison (rcspp)
@@ -301,22 +290,7 @@ means as `(bg_sgm + 10) / (paper_sgm + 10)`. 56 Solomon instances per ng.
 Reproduce:
 
 ```bash
-python3 -c '
-import csv, math, collections
-rows = list(csv.DictReader(open("benchmarks/comparison_rcspp.csv")))
-SHIFT = 10.0
-to_s = lambda v: 120.0 if v=="TL" else float(v)
-g = collections.defaultdict(list)
-for r in rows: g[r["ng"]].append(r)
-for ng in sorted(g, key=int):
-    rs = g[ng]
-    bgs = [to_s(r["bgspprc_s"]) for r in rs]
-    pps = [to_s(r["paper_all_s"]) for r in rs]
-    bg_sgm = math.exp(sum(math.log(t+SHIFT) for t in bgs)/len(bgs))-SHIFT
-    pp_sgm = math.exp(sum(math.log(t+SHIFT) for t in pps)/len(pps))-SHIFT
-    ratio = (bg_sgm+SHIFT)/(pp_sgm+SHIFT)
-    print(f"{ng:<4}{bg_sgm:>8.3f}{pp_sgm:>8.3f}{ratio:>8.3f}{len(rs):>5}")
-'
+python3 benchmarks/compute_means.py rcspp
 ```
 
 ### Pathwyse comparison
@@ -329,17 +303,13 @@ parity comparison" section above). bgspprc's default ng-metric for
 `.sppcc`/`.vrp` is **cost** (matches Pathwyse `buildNG`); set with
 `--ng-metric distance` if you want the older Baldacci-distance default.
 
-With both solvers in pure-ng mode on `.sppcc`/`.vrp`, the LP optimum is
-identical, so `#bg_eq` should equal `n` modulo cost-scale rounding
-(Pathwyse stores costs as scaled int32; for `.vrp` `cost_scale=1000`
-round-trip gives ±0.001 wobble that occasionally trips the `1e-3`
-tolerance). The rcspp `.graph` set is excluded from the table:
-empirically the two solvers diverge on LP value there (bgspprc reports
-`cost=0` / no improving column on most rcspp instances while patched
-Pathwyse reports large-negative columns). The cause is preprocessing
-divergence on time-windowed instances, not ng-set construction — both
-use cost-based ng on `.graph`. `pathwyse.csv` does include rcspp rows
-(useful for runtime profiling); only the LP-parity table excludes them.
+With both solvers in pure-ng mode on `.sppcc`/`.vrp`, the optimal
+reduced cost is identical, so `#bg_eq` should equal `n` modulo
+cost-scale rounding (Pathwyse stores costs as scaled int32; for `.vrp`
+`cost_scale=1000` round-trip gives ±0.001 wobble that occasionally trips
+the `1e-3` tolerance). The rcspp `.graph` set is compared on its own
+axis — against the Petersen & Spoorendonk 2025 published runtimes (see
+`comparison_rcspp.csv`) — not against Pathwyse.
 
 One row per `(instance, ng)` from `comparison_pathwyse.csv`. Matches
 `build_comparison_pathwyse.py`: shift = 1 s, **rows where either side
@@ -360,27 +330,7 @@ count (both sides finished); `#bg_eq` counts rows where
 Reproduce:
 
 ```bash
-python3 -c '
-import csv, math, collections
-rows = list(csv.DictReader(open("benchmarks/comparison_pathwyse.csv")))
-bg = {(r["instance"], r["ng"]): r["set"] for r in csv.DictReader(open("benchmarks/bgspprc.csv")) if r["mode"]=="para_bidir"}
-SHIFT = 1.0
-def eq(a, b):
-    return a!="" and b!="" and abs(float(a)-float(b)) <= 1e-3
-g = collections.defaultdict(list)
-for r in rows:
-    s = bg.get((r["instance"], r["ng"]))
-    if s: g[(s, r["ng"])].append(r)
-for k in sorted(g):
-    rs = g[k]
-    pairs = [(float(r["bgspprc_s"]), float(r["pathwyse_s"])) for r in rs if r["bgspprc_s"] and r["pathwyse_s"]]
-    bgs = [p[0] for p in pairs]; pps = [p[1] for p in pairs]
-    beq = sum(1 for r in rs if eq(r["bgspprc_cost"], r["pathwyse_cost"]))
-    bg_sgm = math.exp(sum(math.log(t+SHIFT) for t in bgs)/len(bgs))-SHIFT
-    pp_sgm = math.exp(sum(math.log(t+SHIFT) for t in pps)/len(pps))-SHIFT
-    ratio = (bg_sgm+SHIFT)/(pp_sgm+SHIFT)
-    print(f"{k[0]:<10}{k[1]:<4}{bg_sgm:>8.3f}{pp_sgm:>8.3f}{ratio:>8.3f}{beq:>5}{len(pairs):>5}{len(rs):>5}")
-'
+python3 benchmarks/compute_means.py pathwyse
 ```
 
 ## CSV columns
