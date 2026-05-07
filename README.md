@@ -64,30 +64,30 @@ Headline numbers from the committed CSVs, 120 s timeout per instance. Full
 tables, methodology, and reproducer one-liners in
 [`benchmarks/README.md`](benchmarks/README.md#results).
 
-Plato-style columns: `scaled (s)` = shifted geomean, `unscaled (s)` =
-arithmetic mean, `solved` = #instances finished within the 120 s timeout
-(TL substitutes as 120 s in both means).
+Plato-style columns: `scaled (s)` = shifted geomean (**shift = 10 s**),
+`unscaled (s)` = arithmetic mean, `solved` = #instances finished within
+the 120 s timeout (TL substitutes as 120 s in both means).
 
 **Pathwyse comparison (sppcc + vrp)** — bgspprc `para_bidir` vs patched
-Pathwyse, both in pure-ng mode. sgm shift = 1 s.
+Pathwyse, both in pure-ng mode.
 
 | set      | ng | solver   | scaled (s) | unscaled (s) | solved |
 |----------|---:|----------|-----------:|-------------:|-------:|
-| spprclib |  8 | bgspprc  |       0.89 |         6.95 |  44/45 |
-| spprclib |  8 | pathwyse |       1.52 |        12.13 |  42/45 |
-| spprclib | 16 | bgspprc  |       2.00 |        15.67 |  40/45 |
-| spprclib | 16 | pathwyse |       4.28 |        24.29 |  38/45 |
-| spprclib | 24 | bgspprc  |       5.68 |        26.35 |  38/45 |
-| spprclib | 24 | pathwyse |      10.59 |        42.51 |  31/45 |
-| roberti  |  8 | bgspprc  |       0.54 |         0.88 |  31/31 |
-| roberti  |  8 | pathwyse |       2.33 |        10.00 |  30/31 |
-| roberti  | 16 | bgspprc  |       3.09 |        14.86 |  28/31 |
-| roberti  | 16 | pathwyse |       8.80 |        28.15 |  28/31 |
-| roberti  | 24 | bgspprc  |      14.36 |        43.70 |  23/31 |
-| roberti  | 24 | pathwyse |      26.82 |        62.02 |  19/31 |
+| spprclib |  8 | bgspprc  |       2.71 |         6.95 |  44/45 |
+| spprclib |  8 | pathwyse |       4.14 |        12.13 |  42/45 |
+| spprclib | 16 | bgspprc  |       5.19 |        15.67 |  40/45 |
+| spprclib | 16 | pathwyse |       9.38 |        24.29 |  38/45 |
+| spprclib | 24 | bgspprc  |      11.33 |        26.35 |  38/45 |
+| spprclib | 24 | pathwyse |      19.30 |        42.51 |  31/45 |
+| roberti  |  8 | bgspprc  |       0.77 |         0.88 |  31/31 |
+| roberti  |  8 | pathwyse |       4.66 |        10.00 |  30/31 |
+| roberti  | 16 | bgspprc  |       6.11 |        14.86 |  28/31 |
+| roberti  | 16 | pathwyse |      14.53 |        28.15 |  28/31 |
+| roberti  | 24 | bgspprc  |      22.44 |        43.70 |  23/31 |
+| roberti  | 24 | pathwyse |      36.71 |        62.02 |  19/31 |
 
 **Paper comparison (rcspp)** — bgspprc `para_bidir` vs Petersen & Spoorendonk
-2025 (arXiv:2511.01397) `all_s` column. sgm shift = 10 s.
+2025 (arXiv:2511.01397) `all_s` column.
 
 | ng | solver   | scaled (s) | unscaled (s) | solved |
 |---:|----------|-----------:|-------------:|-------:|

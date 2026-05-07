@@ -8,7 +8,7 @@ Each table is printed as github-flavored markdown so the output can be
 pasted directly into `benchmarks/README.md`:
 
   pathwyse         comparison_pathwyse.csv per (set, ng) × {bgspprc,
-                   pathwyse}; sgm shift = 1 s.
+                   pathwyse}; sgm shift = 10 s.
   rcspp            comparison_rcspp.csv per ng × {bgspprc, paper}; sgm
                    shift = 10 s (matches run_comparison.sh).
   modes            bgspprc.csv per (set, ng, mode) — the 6-mode/SIMD
@@ -89,7 +89,7 @@ def modes_table(csv_path: Path, shift: float = 1.0, tl: float = 120.0) -> str:
 
 
 def pathwyse_table(
-    cmp_path: Path, bg_path: Path, shift: float = 1.0, tl: float = 120.0
+    cmp_path: Path, bg_path: Path, shift: float = 10.0, tl: float = 120.0
 ) -> str:
     """bgspprc para_bidir vs patched Pathwyse on `.sppcc`/`.vrp`, in Plato
     style: one row per (set, ng, solver). Timeouts substitute as `tl`
