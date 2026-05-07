@@ -86,6 +86,15 @@ Pathwyse, both in pure-ng mode.
 | roberti  | 24 | bgspprc  |  14.360 |   43.695 |  23/31 |
 | roberti  | 24 | pathwyse |  26.824 |   62.019 |  19/31 |
 
+bgspprc is **1.3×–2.4× faster** than Pathwyse by sgm across the six
+(set, ng) cells (ratio = `(pathwyse_sgm + 1) / (bgspprc_sgm + 1)`,
+shift = 1 s, TL → 120 s on both sides). Both solvers reach the same
+optimal reduced cost on `.sppcc`/`.vrp` modulo cost-scale rounding
+(verified per-row in `comparison_pathwyse.csv`). Pathwyse needs
+patches against upstream `d53c01b` — see
+[`benchmarks/patches/`](benchmarks/patches/) (auto-applied by
+`run_pathwyse.sh`).
+
 **Paper comparison (rcspp)** — bgspprc `para_bidir` vs Petersen & Spoorendonk
 2025 (arXiv:2511.01397) `all_s` column.
 
@@ -98,13 +107,11 @@ Pathwyse, both in pure-ng mode.
 | 24 | bgspprc  |   2.617 |   15.533 |  52/56 |
 | 24 | paper    |   0.873 |    9.123 |  53/56 |
 
-Both solvers reach the same optimal reduced cost on `.sppcc`/`.vrp`
-modulo cost-scale rounding (verified per-row in `comparison_pathwyse.csv`).
-bgspprc is **1.3×–2.4× faster** than Pathwyse by sgm across the six
-(set, ng) cells (ratio = `(pathwyse_sgm + 1) / (bgspprc_sgm + 1)`,
-shift = 1 s, TL → 120 s on both sides). Pathwyse needs patches against
-upstream `d53c01b` — see [`benchmarks/patches/`](benchmarks/patches/)
-(auto-applied by `run_pathwyse.sh`).
+bgspprc is **1.9×–2.4× slower** than the paper on rcspp at sgm — same
+formula `(bg_sgm + 1) / (paper_sgm + 1)`, both sides share the 120 s
+budget. Gap narrows with ng: 2.42× at ng=8 → 2.11× at ng=16 → 1.93× at
+ng=24, suggesting bgspprc's overhead is fixed-per-instance rather than
+proportional to search-tree size.
 
 ## Use as a Library
 

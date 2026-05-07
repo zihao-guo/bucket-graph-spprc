@@ -236,6 +236,15 @@ spot-checking.
 | roberti  | 24 | bgspprc  |  14.360 |   43.695 |  23/31 |
 | roberti  | 24 | pathwyse |  26.824 |   62.019 |  19/31 |
 
+bgspprc is **1.3×–2.4× faster** than Pathwyse by sgm across the six
+(set, ng) cells; ratio = `(pathwyse_sgm + 1) / (bgspprc_sgm + 1)` per
+row. Per-cell speedup factors (rounded):
+
+| set      | ng=8 | ng=16 | ng=24 |
+|----------|-----:|------:|------:|
+| spprclib | 1.33× | 1.76× | 1.73× |
+| roberti  | 2.16× | 2.40× | 1.81× |
+
 Reproduce: `python3 benchmarks/compute_means.py pathwyse`
 
 ### Paper comparison (rcspp)
@@ -253,6 +262,12 @@ table above; matches `run_comparison.sh`.)
 | 16 | paper    |   0.526 |    3.010 |  56/56 |
 | 24 | bgspprc  |   2.617 |   15.533 |  52/56 |
 | 24 | paper    |   0.873 |    9.123 |  53/56 |
+
+bgspprc is **1.9×–2.4× slower** than the paper on rcspp at sgm — same
+formula, both sides share the 120 s timeout budget. The gap narrows with
+ng (2.42× at ng=8 → 2.11× at ng=16 → 1.93× at ng=24), suggesting
+bgspprc's overhead is fixed-per-instance rather than proportional to
+search-tree size.
 
 Reproduce: `python3 benchmarks/compute_means.py rcspp`
 
