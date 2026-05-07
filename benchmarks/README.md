@@ -197,141 +197,64 @@ introducing ±0.001 round-trip wobble that occasionally exceeds the
 ## Results
 
 All numbers below are derived from the committed CSVs. Each table is followed
-by a one-liner that reproduces it, so every cell is checkable. The shifted
-geometric mean is `sgm_s(x) = exp(mean(log(x + s))) − s`. Convention differs
-per table and matches the script that emits the underlying CSV — each table
-notes its shift and timeout handling.
+by a one-liner that reproduces it. Plato-style columns: **`scaled (s)`** is
+the shifted geometric mean (`exp(mean(log(t + s))) − s`), **`unscaled (s)`**
+is the arithmetic mean, **`solved`** is the count of instances that finished
+within the 120 s timeout (timeouts substitute as 120 s in both means).
 
-### Runtime
+### Pathwyse comparison (sppcc + vrp)
 
-bgspprc wall-clock per `(set, ng, mode)`. `n` instances per set: 45 (spprclib),
-31 (roberti), 56 (rcspp). Shift = 1 s, timeouts (empty `cost` cells) substituted
-with 120 s in the sgm. Modes cross the bidir axis (`mono|bidir|para_bidir`) with
-the SIMD axis (`_base` = dominance SIMD disabled, `_vec` = enabled; `para_bidir`
-without a suffix is the SIMD-on variant to match the default CLI build).
+bgspprc `para_bidir` vs patched Pathwyse, both in pure-ng mode (Baldacci
+2011 / Sadykov-Uchoa-Pessoa 2021 §4 — no 2-cycle elimination, no DSSR).
+bgspprc implements pure ng directly; Pathwyse needs the two patches in
+`benchmarks/patches/` (see "Pathwyse patches for parity comparison" above).
+bgspprc's default ng-metric for `.sppcc`/`.vrp` is **cost** (matches
+Pathwyse `buildNG`). Optimal reduced cost is identical modulo cost-scale
+rounding; `comparison_pathwyse.csv` carries the per-row cost values for
+spot-checking. sgm shift = 1 s, timeouts substituted as 120 s.
 
-| set       | ng | mode             | sgm (s) | max (s) | #to |
-|-----------|---:|------------------|--------:|--------:|----:|
-| spprclib  |  8 | mono_base        |   0.237 |   8.709 |   0 |
-| spprclib  |  8 | mono_vec         |   0.218 |   7.194 |   0 |
-| spprclib  |  8 | bidir_base       |   0.609 | 120.000 |   1 |
-| spprclib  |  8 | bidir_vec        |   0.627 | 120.000 |   1 |
-| spprclib  |  8 | para_bidir_base  |   0.626 | 120.000 |   1 |
-| spprclib  |  8 | para_bidir       |   0.893 | 120.000 |   1 |
-| spprclib  | 16 | mono_base        |   1.211 |  16.768 |   0 |
-| spprclib  | 16 | mono_vec         |   1.435 |  23.043 |   0 |
-| spprclib  | 16 | bidir_base       |   1.972 | 120.000 |   2 |
-| spprclib  | 16 | bidir_vec        |   1.885 | 120.000 |   1 |
-| spprclib  | 16 | para_bidir_base  |   1.628 | 120.000 |   1 |
-| spprclib  | 16 | para_bidir       |   2.000 | 120.000 |   5 |
-| spprclib  | 24 | mono_base        |   6.939 | 120.000 |   3 |
-| spprclib  | 24 | mono_vec         |   9.937 | 120.000 |   3 |
-| spprclib  | 24 | bidir_base       |   4.867 | 120.000 |   5 |
-| spprclib  | 24 | bidir_vec        |   5.969 | 120.000 |   4 |
-| spprclib  | 24 | para_bidir_base  |   4.271 | 120.000 |   4 |
-| spprclib  | 24 | para_bidir       |   5.683 | 120.000 |   7 |
-| roberti   |  8 | mono_base        |   0.885 |  12.342 |   0 |
-| roberti   |  8 | mono_vec         |   0.867 |  10.095 |   0 |
-| roberti   |  8 | bidir_base       |   0.696 |  13.554 |   0 |
-| roberti   |  8 | bidir_vec        |   0.742 |  13.885 |   0 |
-| roberti   |  8 | para_bidir_base  |   0.597 |  11.429 |   0 |
-| roberti   |  8 | para_bidir       |   0.540 |   9.531 |   0 |
-| roberti   | 16 | mono_base        |   5.865 | 120.000 |   3 |
-| roberti   | 16 | mono_vec         |   7.458 | 120.000 |   3 |
-| roberti   | 16 | bidir_base       |   3.511 | 120.000 |   3 |
-| roberti   | 16 | bidir_vec        |   4.264 | 120.000 |   3 |
-| roberti   | 16 | para_bidir_base  |   2.936 | 120.000 |   3 |
-| roberti   | 16 | para_bidir       |   3.090 | 120.000 |   3 |
-| roberti   | 24 | mono_base        |  38.657 | 120.000 |  11 |
-| roberti   | 24 | mono_vec         |  51.561 | 120.000 |  14 |
-| roberti   | 24 | bidir_base       |  14.972 | 120.000 |   8 |
-| roberti   | 24 | bidir_vec        |  20.541 | 120.000 |  10 |
-| roberti   | 24 | para_bidir_base  |  11.566 | 120.000 |   6 |
-| roberti   | 24 | para_bidir       |  14.360 | 120.000 |   8 |
-| rcspp     |  8 | mono_base        |   1.498 |  33.934 |   0 |
-| rcspp     |  8 | mono_vec         |   1.287 |  19.874 |   0 |
-| rcspp     |  8 | bidir_base       |   2.359 |  57.965 |   0 |
-| rcspp     |  8 | bidir_vec        |   2.384 |  58.860 |   0 |
-| rcspp     |  8 | para_bidir_base  |   1.878 |  43.540 |   0 |
-| rcspp     |  8 | para_bidir       |   1.908 |  44.721 |   0 |
-| rcspp     | 16 | mono_base        |   1.579 |  48.347 |   0 |
-| rcspp     | 16 | mono_vec         |   1.593 |  52.757 |   0 |
-| rcspp     | 16 | bidir_base       |   2.791 | 120.000 |   1 |
-| rcspp     | 16 | bidir_vec        |   2.845 | 120.000 |   1 |
-| rcspp     | 16 | para_bidir_base  |   2.183 |  94.223 |   0 |
-| rcspp     | 16 | para_bidir       |   2.221 |  93.674 |   0 |
-| rcspp     | 24 | mono_base        |   1.956 | 120.000 |   2 |
-| rcspp     | 24 | mono_vec         |   1.974 | 120.000 |   2 |
-| rcspp     | 24 | bidir_base       |   3.156 | 120.000 |   5 |
-| rcspp     | 24 | bidir_vec        |   3.180 | 120.000 |   5 |
-| rcspp     | 24 | para_bidir_base  |   2.555 | 120.000 |   4 |
-| rcspp     | 24 | para_bidir       |   2.617 | 120.000 |   4 |
+| set      | ng | solver   | scaled (s) | unscaled (s) | solved |
+|----------|---:|----------|-----------:|-------------:|-------:|
+| spprclib |  8 | bgspprc  |      0.893 |        6.953 |  44/45  |
+| spprclib |  8 | pathwyse |      1.522 |       12.133 |  42/45  |
+| spprclib | 16 | bgspprc  |      2.000 |       15.674 |  40/45  |
+| spprclib | 16 | pathwyse |      4.284 |       24.290 |  38/45  |
+| spprclib | 24 | bgspprc  |      5.683 |       26.354 |  38/45  |
+| spprclib | 24 | pathwyse |     10.590 |       42.512 |  31/45  |
+| roberti  |  8 | bgspprc  |      0.540 |        0.882 |  31/31  |
+| roberti  |  8 | pathwyse |      2.330 |        9.999 |  30/31  |
+| roberti  | 16 | bgspprc  |      3.090 |       14.863 |  28/31  |
+| roberti  | 16 | pathwyse |      8.796 |       28.152 |  28/31  |
+| roberti  | 24 | bgspprc  |     14.360 |       43.695 |  23/31  |
+| roberti  | 24 | pathwyse |     26.824 |       62.019 |  19/31  |
 
-Reproduce:
-
-```bash
-python3 benchmarks/compute_means.py runtime
-```
+Reproduce: `python3 benchmarks/compute_means.py pathwyse`
 
 ### Paper comparison (rcspp)
 
-bgspprc `para_bidir` (all opts on) vs Petersen & Spoorendonk 2025
-(arXiv:2511.01397) `all_s` column (all opts on). Shared 120 s timeout budget —
-`TL` rows are substituted with 120 s before the sgm (conservative: actual is
-≥ 120 s). Matches `run_comparison.sh`: shift = 10 s, ratio computed on shifted
-means as `(bg_sgm + 10) / (paper_sgm + 10)`. 56 Solomon instances per ng.
+bgspprc `para_bidir` vs Petersen & Spoorendonk 2025 (arXiv:2511.01397)
+`all_s` column. Shared 120 s timeout — `TL` rows substitute as 120 s.
+sgm shift = 10 s (matches `run_comparison.sh`). 56 Solomon instances
+per ng.
 
-| ng | bgspprc sgm (s) | paper sgm (s) | ratio | n  |
-|---:|----------------:|--------------:|------:|---:|
-|  8 |           3.669 |         0.334 | 1.323 | 56 |
-| 16 |           4.658 |         1.367 | 1.289 | 56 |
-| 24 |           6.102 |         2.890 | 1.249 | 56 |
+| ng | solver   | scaled (s) | unscaled (s) | solved |
+|---:|----------|-----------:|-------------:|-------:|
+|  8 | bgspprc  |      3.669 |        5.697 |  56/56  |
+|  8 | paper    |      0.334 |        0.406 |  56/56  |
+| 16 | bgspprc  |      4.658 |        8.908 |  56/56  |
+| 16 | paper    |      1.367 |        3.010 |  56/56  |
+| 24 | bgspprc  |      6.102 |       15.533 |  52/56  |
+| 24 | paper    |      2.890 |        9.123 |  53/56  |
 
-Reproduce:
+Reproduce: `python3 benchmarks/compute_means.py rcspp`
 
-```bash
-python3 benchmarks/compute_means.py rcspp
-```
+### bgspprc mode/SIMD ablation
 
-### Pathwyse comparison
+bgspprc-only across `(set, ng, mode)`: mono vs bidir vs para_bidir,
+with SIMD on (`_vec`/`para_bidir`) or off (`_base`). The default CLI
+build maps to `para_bidir` (used in the comparisons above). Run
+`python3 benchmarks/compute_means.py modes` for the full 54-row table.
 
-Both solvers configured for **pure ng-path relaxation** (Baldacci 2011 /
-Sadykov-Uchoa-Pessoa 2021 §4 — no extra 2-cycle elimination, no DSSR
-elementarity post-pass). bgspprc implements pure ng directly; Pathwyse
-needs the two patches in `benchmarks/patches/` (see "Pathwyse patches for
-parity comparison" section above). bgspprc's default ng-metric for
-`.sppcc`/`.vrp` is **cost** (matches Pathwyse `buildNG`); set with
-`--ng-metric distance` if you want the older Baldacci-distance default.
-
-With both solvers in pure-ng mode on `.sppcc`/`.vrp`, the optimal
-reduced cost is identical, so `#bg_eq` should equal `n` modulo
-cost-scale rounding (Pathwyse stores costs as scaled int32; for `.vrp`
-`cost_scale=1000` round-trip gives ±0.001 wobble that occasionally trips
-the `1e-3` tolerance). The rcspp `.graph` set is compared on its own
-axis — against the Petersen & Spoorendonk 2025 published runtimes (see
-`comparison_rcspp.csv`) — not against Pathwyse.
-
-One row per `(instance, ng)` from `comparison_pathwyse.csv`. Matches
-`build_comparison_pathwyse.py`: shift = 1 s, **rows where either side
-timed out are dropped** from the sgm (not substituted), ratio computed on
-shifted means as `(bg_sgm + 1) / (pathwyse_sgm + 1)`. `n` is the paired
-count (both sides finished); `#bg_eq` counts rows where
-`|bgspprc_cost − pathwyse_cost| ≤ 1e-3` across all `n_total` rows.
-
-| set      | ng | bgspprc sgm (s) | pathwyse sgm (s) | ratio | #bg_eq | n  | n_total |
-|----------|---:|----------------:|-----------------:|------:|-------:|---:|--------:|
-| spprclib |  8 |           0.465 |            0.913 | 0.766 |     42 | 42 |      45 |
-| spprclib | 16 |           0.726 |            1.968 | 0.581 |     38 | 38 |      45 |
-| spprclib | 24 |           1.453 |            3.018 | 0.611 |     31 | 31 |      45 |
-| roberti  |  8 |           0.495 |            1.954 | 0.506 |     24 | 30 |      31 |
-| roberti  | 16 |           1.845 |            6.483 | 0.380 |     20 | 28 |      31 |
-| roberti  | 24 |           3.802 |            9.996 | 0.437 |     13 | 19 |      31 |
-
-Reproduce:
-
-```bash
-python3 benchmarks/compute_means.py pathwyse
-```
 
 ## CSV columns
 

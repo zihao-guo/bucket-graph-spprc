@@ -64,42 +64,45 @@ Headline numbers from the committed CSVs, 120 s timeout per instance. Full
 tables, methodology, and reproducer one-liners in
 [`benchmarks/README.md`](benchmarks/README.md#results).
 
-**Runtime** — `para_bidir` shifted geomean (s) / #timeouts per `(set, ng)`:
+Plato-style columns: `scaled (s)` = shifted geomean, `unscaled (s)` =
+arithmetic mean, `solved` = #instances finished within the 120 s timeout
+(TL substitutes as 120 s in both means).
 
-| set      | ng 8 | ng 16 | ng 24 |
-|----------|-----:|------:|------:|
-| spprclib |   0.89 / 1 |  2.00 / 5 |  5.68 / 7 |
-| roberti  |   0.54 / 0 |  3.09 / 3 | 14.36 / 8 |
-| rcspp    |   1.91 / 0 |  2.22 / 0 |  2.62 / 4 |
+**Pathwyse comparison (sppcc + vrp)** — bgspprc `para_bidir` vs patched
+Pathwyse, both in pure-ng mode. sgm shift = 1 s.
+
+| set      | ng | solver   | scaled (s) | unscaled (s) | solved |
+|----------|---:|----------|-----------:|-------------:|-------:|
+| spprclib |  8 | bgspprc  |       0.89 |         6.95 |  44/45 |
+| spprclib |  8 | pathwyse |       1.52 |        12.13 |  42/45 |
+| spprclib | 16 | bgspprc  |       2.00 |        15.67 |  40/45 |
+| spprclib | 16 | pathwyse |       4.28 |        24.29 |  38/45 |
+| spprclib | 24 | bgspprc  |       5.68 |        26.35 |  38/45 |
+| spprclib | 24 | pathwyse |      10.59 |        42.51 |  31/45 |
+| roberti  |  8 | bgspprc  |       0.54 |         0.88 |  31/31 |
+| roberti  |  8 | pathwyse |       2.33 |        10.00 |  30/31 |
+| roberti  | 16 | bgspprc  |       3.09 |        14.86 |  28/31 |
+| roberti  | 16 | pathwyse |       8.80 |        28.15 |  28/31 |
+| roberti  | 24 | bgspprc  |      14.36 |        43.70 |  23/31 |
+| roberti  | 24 | pathwyse |      26.82 |        62.02 |  19/31 |
 
 **Paper comparison (rcspp)** — bgspprc `para_bidir` vs Petersen & Spoorendonk
-2025 `all_s` (shift = 10 s, TL → 120 s, 56 instances/ng):
+2025 (arXiv:2511.01397) `all_s` column. sgm shift = 10 s.
 
-| ng | ratio |
-|---:|------:|
-|  8 | 1.32  |
-| 16 | 1.29  |
-| 24 | 1.25  |
+| ng | solver   | scaled (s) | unscaled (s) | solved |
+|---:|----------|-----------:|-------------:|-------:|
+|  8 | bgspprc  |       3.67 |         5.70 |  56/56 |
+|  8 | paper    |       0.33 |         0.41 |  56/56 |
+| 16 | bgspprc  |       4.66 |         8.91 |  56/56 |
+| 16 | paper    |       1.37 |         3.01 |  56/56 |
+| 24 | bgspprc  |       6.10 |        15.53 |  52/56 |
+| 24 | paper    |       2.89 |         9.12 |  53/56 |
 
-**Pathwyse comparison** — bgspprc `para_bidir` vs patched Pathwyse, both in
-pure-ng mode (shift = 1 s, TL rows dropped; `#bg_eq` is where
-`|bgspprc_cost − pathwyse_cost| ≤ 1e-3`):
-
-| set      | ng | ratio | #bg_eq | n  |
-|----------|---:|------:|-------:|---:|
-| spprclib |  8 | 0.77  |     42 | 42 |
-| spprclib | 16 | 0.58  |     38 | 38 |
-| spprclib | 24 | 0.61  |     31 | 31 |
-| roberti  |  8 | 0.51  |     24 | 30 |
-| roberti  | 16 | 0.38  |     20 | 28 |
-| roberti  | 24 | 0.44  |     13 | 19 |
-
-bgspprc is ~25-32% slower than the paper on rcspp at the sgm (both solvers
-share the same 120 s budget) and ~30–60% of Pathwyse runtime on spprclib +
-roberti where both finish, with integer-exact LP-cost agreement on every
-spprclib pair (`#bg_eq == n`); `.vrp` cost-scale rounding accounts for
-the smaller `#bg_eq` on roberti. Patches required against upstream
-Pathwyse `d53c01b` — see [`benchmarks/patches/`](benchmarks/patches/).
+Both solvers reach the same optimal reduced cost on `.sppcc`/`.vrp`
+modulo cost-scale rounding (verified per-row in `comparison_pathwyse.csv`).
+Pathwyse needs patches against upstream `d53c01b` —
+see [`benchmarks/patches/`](benchmarks/patches/) (auto-applied by
+`run_pathwyse.sh`).
 
 ## Use as a Library
 
