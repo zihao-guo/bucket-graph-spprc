@@ -1,16 +1,17 @@
 #!/usr/bin/env python3
 """Compute the benchmark tables published in the README.
 
-Plato-style columns: `scaled (s)` = shifted geometric mean, `unscaled (s)` =
-arithmetic mean, `solved` = #instances completed within the timeout. All
-times use TL → 120 s substitution (timeouts count as 120 s, never dropped).
-Each table is printed as github-flavored markdown so the output can be
-pasted directly into `benchmarks/README.md`:
+Each row reports `sgm (s)` (shifted geometric mean,
+`exp(mean(log(t + s))) − s`, with `s` = 10 s), `mean (s)` (arithmetic
+mean), and `solved` (count of instances completed within the timeout).
+Timeouts substitute as 120 s in both means (never dropped). Each table
+is printed as github-flavored markdown so the output can be pasted
+directly into `benchmarks/README.md`:
 
   pathwyse         comparison_pathwyse.csv per (set, ng) × {bgspprc,
-                   pathwyse}; sgm shift = 10 s.
+                   pathwyse}; sgm shift = 1 s.
   rcspp            comparison_rcspp.csv per ng × {bgspprc, paper}; sgm
-                   shift = 10 s (matches run_comparison.sh).
+                   shift = 1 s.
   modes            bgspprc.csv per (set, ng, mode) — the 6-mode/SIMD
                    ablation, bgspprc-only.
 
@@ -59,8 +60,8 @@ def arithmetic_mean(values: list[float]) -> float:
 
 def modes_table(csv_path: Path, shift: float = 1.0, tl: float = 120.0) -> str:
     """bgspprc-only ablation across (set, ng, mode). Empty cost = timeout
-    substituted with `tl` seconds in both `scaled` (sgm) and `unscaled`
-    (mean). `solved` is the count of instances that finished without TL."""
+    substituted with `tl` seconds in both the sgm and the arithmetic mean.
+    `solved` is the count of instances that finished without TL."""
     rows = list(csv.DictReader(open(csv_path)))
     grouped: dict[tuple[str, str, str], list[dict]] = defaultdict(list)
     for r in rows:
@@ -68,8 +69,8 @@ def modes_table(csv_path: Path, shift: float = 1.0, tl: float = 120.0) -> str:
         grouped[(s, r["ng"], r["mode"])].append(r)
 
     lines = [
-        "| set       | ng | mode             | scaled (s) | unscaled (s) | solved |",
-        "|-----------|---:|------------------|-----------:|-------------:|-------:|",
+        "| set       | ng | mode             | sgm (s) | mean (s) | solved |",
+        "|-----------|---:|------------------|--------:|---------:|-------:|",
     ]
     for s in SET_ORDER:
         for ng in NG_ORDER:
@@ -81,15 +82,15 @@ def modes_table(csv_path: Path, shift: float = 1.0, tl: float = 120.0) -> str:
                 solved = sum(1 for r in rs if r["cost"] != "")
                 lines.append(
                     f"| {s:<9} | {int(ng):>2} | {m:<16} | "
-                    f"{shifted_geomean(ts, shift):>10.3f} | "
-                    f"{arithmetic_mean(ts):>12.3f} | "
+                    f"{shifted_geomean(ts, shift):>7.3f} | "
+                    f"{arithmetic_mean(ts):>8.3f} | "
                     f"{solved:>3}/{len(rs):<3} |"
                 )
     return "\n".join(lines)
 
 
 def pathwyse_table(
-    cmp_path: Path, bg_path: Path, shift: float = 10.0, tl: float = 120.0
+    cmp_path: Path, bg_path: Path, shift: float = 1.0, tl: float = 120.0
 ) -> str:
     """bgspprc para_bidir vs patched Pathwyse on `.sppcc`/`.vrp`, in Plato
     style: one row per (set, ng, solver). Timeouts substitute as `tl`
@@ -110,8 +111,8 @@ def pathwyse_table(
             grouped[(s, r["ng"])].append(r)
 
     lines = [
-        "| set      | ng | solver   | scaled (s) | unscaled (s) | solved |",
-        "|----------|---:|----------|-----------:|-------------:|-------:|",
+        "| set      | ng | solver   | sgm (s) | mean (s) | solved |",
+        "|----------|---:|----------|--------:|---------:|-------:|",
     ]
     for s in ["spprclib", "roberti"]:
         for ng in NG_ORDER:
@@ -124,14 +125,14 @@ def pathwyse_table(
                 solved = sum(1 for r in rs if r[col] != "")
                 lines.append(
                     f"| {s:<8} | {int(ng):>2} | {solver:<8} | "
-                    f"{shifted_geomean(ts, shift):>10.3f} | "
-                    f"{arithmetic_mean(ts):>12.3f} | "
+                    f"{shifted_geomean(ts, shift):>7.3f} | "
+                    f"{arithmetic_mean(ts):>8.3f} | "
                     f"{solved:>3}/{len(rs):<3} |"
                 )
     return "\n".join(lines)
 
 
-def rcspp_table(cmp_path: Path, shift: float = 10.0, tl: float = 120.0) -> str:
+def rcspp_table(cmp_path: Path, shift: float = 1.0, tl: float = 120.0) -> str:
     """bgspprc para_bidir vs Petersen & Spoorendonk 2025 paper runtimes per
     ng, Plato-style. `TL` rows substitute as `tl` seconds (matches
     run_comparison.sh)."""
@@ -145,8 +146,8 @@ def rcspp_table(cmp_path: Path, shift: float = 10.0, tl: float = 120.0) -> str:
         grouped[r["ng"]].append(r)
 
     lines = [
-        "| ng | solver   | scaled (s) | unscaled (s) | solved |",
-        "|---:|----------|-----------:|-------------:|-------:|",
+        "| ng | solver   | sgm (s) | mean (s) | solved |",
+        "|---:|----------|--------:|---------:|-------:|",
     ]
     for ng in sorted(grouped, key=int):
         rs = grouped[ng]
@@ -156,8 +157,8 @@ def rcspp_table(cmp_path: Path, shift: float = 10.0, tl: float = 120.0) -> str:
             solved = sum(1 for r in rs if r[col] != "TL")
             lines.append(
                 f"| {int(ng):>2} | {solver:<8} | "
-                f"{shifted_geomean(ts, shift):>10.3f} | "
-                f"{arithmetic_mean(ts):>12.3f} | "
+                f"{shifted_geomean(ts, shift):>7.3f} | "
+                f"{arithmetic_mean(ts):>8.3f} | "
                 f"{solved:>3}/{len(rs):<3} |"
             )
     return "\n".join(lines)

@@ -196,14 +196,19 @@ introducing ±0.001 round-trip wobble that occasionally exceeds the
 
 ## Results
 
-All numbers below are derived from the committed CSVs. Each table is followed
-by a one-liner that reproduces it. Plato-style columns:
-**`scaled (s)`** is the shifted geometric mean
-(`sgm_s(t) = exp(mean(log(t + s))) − s`) with **shift `s` = 10 s**;
-**`unscaled (s)`** is the arithmetic mean; **`solved`** is the count of
-instances that finished within the 120 s timeout. Timeouts substitute as
-120 s in both means. Convention follows Mittelmann's
-[lpfeas/MILP benchmarks](https://plato.asu.edu/ftp/lpfeas.html).
+All numbers below are derived from the committed CSVs. Each table is
+followed by a one-liner that reproduces it. Columns:
+
+- **`sgm (s)`** — shifted geometric mean,
+  `exp(mean(log(t + s))) − s`, with **shift `s` = 1 s**. The 1 s shift
+  preserves resolution in the sub-second / few-seconds regime where most
+  instances live; bigger shifts (the 10 s convention used in MILP
+  benchmarks like Mittelmann's
+  [lpfeas](https://plato.asu.edu/ftp/lpfeas.html)) over-compress those
+  differences here.
+- **`mean (s)`** — arithmetic mean of times.
+- **`solved`** — count of instances that finished within the 120 s
+  timeout (timeouts substitute as 120 s in both `sgm` and `mean`).
 
 ### Pathwyse comparison (sppcc + vrp)
 
@@ -216,20 +221,20 @@ Pathwyse `buildNG`). Optimal reduced cost is identical modulo cost-scale
 rounding; `comparison_pathwyse.csv` carries the per-row cost values for
 spot-checking.
 
-| set      | ng | solver   | scaled (s) | unscaled (s) | solved |
-|----------|---:|----------|-----------:|-------------:|-------:|
-| spprclib |  8 | bgspprc  |      2.713 |        6.953 |  44/45  |
-| spprclib |  8 | pathwyse |      4.144 |       12.133 |  42/45  |
-| spprclib | 16 | bgspprc  |      5.189 |       15.674 |  40/45  |
-| spprclib | 16 | pathwyse |      9.381 |       24.290 |  38/45  |
-| spprclib | 24 | bgspprc  |     11.332 |       26.354 |  38/45  |
-| spprclib | 24 | pathwyse |     19.304 |       42.512 |  31/45  |
-| roberti  |  8 | bgspprc  |      0.774 |        0.882 |  31/31  |
-| roberti  |  8 | pathwyse |      4.659 |        9.999 |  30/31  |
-| roberti  | 16 | bgspprc  |      6.110 |       14.863 |  28/31  |
-| roberti  | 16 | pathwyse |     14.531 |       28.152 |  28/31  |
-| roberti  | 24 | bgspprc  |     22.442 |       43.695 |  23/31  |
-| roberti  | 24 | pathwyse |     36.706 |       62.019 |  19/31  |
+| set      | ng | solver   | sgm (s) | mean (s) | solved |
+|----------|---:|----------|--------:|---------:|-------:|
+| spprclib |  8 | bgspprc  |   0.893 |    6.953 |  44/45 |
+| spprclib |  8 | pathwyse |   1.522 |   12.133 |  42/45 |
+| spprclib | 16 | bgspprc  |   2.000 |   15.674 |  40/45 |
+| spprclib | 16 | pathwyse |   4.284 |   24.290 |  38/45 |
+| spprclib | 24 | bgspprc  |   5.683 |   26.354 |  38/45 |
+| spprclib | 24 | pathwyse |  10.590 |   42.512 |  31/45 |
+| roberti  |  8 | bgspprc  |   0.540 |    0.882 |  31/31 |
+| roberti  |  8 | pathwyse |   2.330 |    9.999 |  30/31 |
+| roberti  | 16 | bgspprc  |   3.090 |   14.863 |  28/31 |
+| roberti  | 16 | pathwyse |   8.796 |   28.152 |  28/31 |
+| roberti  | 24 | bgspprc  |  14.360 |   43.695 |  23/31 |
+| roberti  | 24 | pathwyse |  26.824 |   62.019 |  19/31 |
 
 Reproduce: `python3 benchmarks/compute_means.py pathwyse`
 
@@ -240,14 +245,14 @@ bgspprc `para_bidir` vs Petersen & Spoorendonk 2025 (arXiv:2511.01397)
 56 Solomon instances per ng. (Same shift convention as the Pathwyse
 table above; matches `run_comparison.sh`.)
 
-| ng | solver   | scaled (s) | unscaled (s) | solved |
-|---:|----------|-----------:|-------------:|-------:|
-|  8 | bgspprc  |      3.669 |        5.697 |  56/56  |
-|  8 | paper    |      0.334 |        0.406 |  56/56  |
-| 16 | bgspprc  |      4.658 |        8.908 |  56/56  |
-| 16 | paper    |      1.367 |        3.010 |  56/56  |
-| 24 | bgspprc  |      6.102 |       15.533 |  52/56  |
-| 24 | paper    |      2.890 |        9.123 |  53/56  |
+| ng | solver   | sgm (s) | mean (s) | solved |
+|---:|----------|--------:|---------:|-------:|
+|  8 | bgspprc  |   1.908 |    5.697 |  56/56 |
+|  8 | paper    |   0.203 |    0.406 |  56/56 |
+| 16 | bgspprc  |   2.221 |    8.908 |  56/56 |
+| 16 | paper    |   0.526 |    3.010 |  56/56 |
+| 24 | bgspprc  |   2.617 |   15.533 |  52/56 |
+| 24 | paper    |   0.873 |    9.123 |  53/56 |
 
 Reproduce: `python3 benchmarks/compute_means.py rcspp`
 
