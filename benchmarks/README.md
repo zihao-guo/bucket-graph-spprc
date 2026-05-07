@@ -187,12 +187,11 @@ Without the patches, Pathwyse's relaxation is strictly tighter than
 bgspprc's (pure ng + extra 2-cycle elimination). On instances where
 2-cycle exploitation lowers the LP, bgspprc reports a *more negative*
 reduced cost than unpatched Pathwyse; the values are equal where 2-cycles
-don't help. With both patches, **integer-exact** cost agreement on every
-spprclib pair where both solvers complete (`#bg_eq == n` for ng ∈
-{8, 16, 24}; see Results table). Roberti has a small `#bg_eq < n` because
-`.vrp` uses `cost_scale=1000` for the int32-only Pathwyse cost field,
-introducing ±0.001 round-trip wobble that occasionally exceeds the
-`1e-3` equality tolerance — the underlying LP optima still match.
+don't help. With both patches, every spprclib and roberti row where both
+solvers complete tags as `bg_leq` (cost agreement within tolerance) in
+`comparison_pathwyse.csv`. The tolerance widens to `100/cost_scale` on
+`.vrp` (cost_scale=1000 → 0.1) to absorb int32 round-trip wobble — the
+underlying LP optima still match exactly modulo that scaling.
 
 ## Results
 

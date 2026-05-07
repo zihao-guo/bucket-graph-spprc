@@ -2,7 +2,7 @@
 """Compute the benchmark tables published in the README.
 
 Each row reports `sgm (s)` (shifted geometric mean,
-`exp(mean(log(t + s))) − s`, with `s` = 10 s), `mean (s)` (arithmetic
+`exp(mean(log(t + s))) − s`, with `s` = 1 s), `mean (s)` (arithmetic
 mean), and `solved` (count of instances completed within the timeout).
 Timeouts substitute as 120 s in both means (never dropped). Each table
 is printed as github-flavored markdown so the output can be pasted
