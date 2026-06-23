@@ -3,6 +3,7 @@
 [![CI](https://github.com/spoorendonk/bucket-graph-spprc/actions/workflows/ci.yml/badge.svg)](https://github.com/spoorendonk/bucket-graph-spprc/actions/workflows/ci.yml)
 [![License: MIT](https://img.shields.io/badge/License-MIT-blue.svg)](LICENSE)
 ![C++23](https://img.shields.io/badge/C%2B%2B-23-blue.svg)
+[![DOI](https://zenodo.org/badge/DOI/10.5281/zenodo.20819208.svg)](https://doi.org/10.5281/zenodo.20819208)
 
 Header-only C++23 template library implementing the bucket graph labeling algorithm for the Shortest Path Problem with Resource Constraints (SPPRC) and vehicle routing variants. Based on [Sadykov, Uchoa & Pessoa (2021)](https://doi.org/10.1287/trsc.2020.0985) with extensions from [Sadykov et al. (2026)](https://inria.hal.science/hal-05486295v2).
 
@@ -235,13 +236,15 @@ ctest --test-dir build
 
 ## Citation
 
-If you use this software, please cite it. Release metadata lives in
-[`CITATION.cff`](CITATION.cff); GitHub renders a "Cite this repository" button from it.
+If you use this software, please cite the archived release via its Zenodo DOI.
+Machine-readable metadata lives in [`CITATION.cff`](CITATION.cff), from which
+GitHub renders a "Cite this repository" button.
 
-<!-- DOI: filled in after the first Zenodo release. Add the concept-DOI badge to the
-     header badges above and the citation line here, e.g.:
-     [![DOI](https://zenodo.org/badge/DOI/10.5281/zenodo.XXXXXXX.svg)](https://doi.org/10.5281/zenodo.XXXXXXX)
-     Spoorendonk, S. (2026). bucket-graph-spprc (v0.1.0). Zenodo. https://doi.org/10.5281/zenodo.XXXXXXX -->
+> Spoorendonk, S. (2026). *bucket-graph-spprc* (v0.1.0). Zenodo. <https://doi.org/10.5281/zenodo.20819208>
+
+The concept DOI [`10.5281/zenodo.20819208`](https://doi.org/10.5281/zenodo.20819208)
+always resolves to the latest release; the v0.1.0 version DOI is
+[`10.5281/zenodo.20819209`](https://doi.org/10.5281/zenodo.20819209).
 
 ## References
 

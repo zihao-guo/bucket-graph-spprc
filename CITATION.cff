@@ -12,7 +12,7 @@ repository-code: "https://github.com/spoorendonk/bucket-graph-spprc"
 url: "https://github.com/spoorendonk/bucket-graph-spprc"
 date-released: "2026-06-23"
 license: MIT
-# doi: added after the first Zenodo release (concept DOI).
+doi: 10.5281/zenodo.20819208
 references:
   - type: article
     title: "A Bucket Graph-Based Labeling Algorithm with Application to Vehicle Routing"
