@@ -571,7 +571,7 @@ int main(int argc, char** argv) {
         return 1;
     }
 
-    std::fprintf(stderr, "bgspprc %s\n", BGSPPRC_GIT_HASH);
+    std::fprintf(stderr, "bgspprc %s (%s)\n", BGSPPRC_VERSION, BGSPPRC_GIT_HASH);
 
     // Validate: parallel_bidir without parallel executor is meaningless.
     if (!opts.parallel && opts.parallel_bidir) {

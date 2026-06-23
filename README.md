@@ -35,7 +35,7 @@ benchmarks/fetch_instances.sh
 Sample output:
 
 ```
-bgspprc bee103a
+bgspprc 0.1.0 (v0.1.0-0-g2eb4a85)
 bgspprc: executor=StdThread  bidir=parallel
 A-n54-k7-149                    sppcc  n=55    arcs=2862    theta=-1e-06  cost=-56718.000  paths=1    26.5ms
   0 34 41 25 47 25 47 25 41 34 54
