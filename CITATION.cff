@@ -5,7 +5,72 @@ message: "If you use this software, please cite it as below."
 authors:
   - family-names: Spoorendonk
     given-names: Simon
+    orcid: "https://orcid.org/0009-0007-4304-6956"
 abstract: "Header-only C++23 template library for the bucket graph labeling algorithm for the Shortest Path Problem with Resource Constraints (SPPRC), used as a subproblem algorithm in vehicle routing variants."
+version: "0.1.0"
 repository-code: "https://github.com/spoorendonk/bucket-graph-spprc"
-date-released: "2026-04-09"
+url: "https://github.com/spoorendonk/bucket-graph-spprc"
+date-released: "2026-06-23"
 license: MIT
+# doi: added after the first Zenodo release (concept DOI).
+references:
+  - type: article
+    title: "A Bucket Graph-Based Labeling Algorithm with Application to Vehicle Routing"
+    authors:
+      - family-names: Sadykov
+        given-names: Ruslan
+      - family-names: Uchoa
+        given-names: Eduardo
+      - family-names: Pessoa
+        given-names: Artur
+    journal: "Transportation Science"
+    volume: 55
+    issue: 1
+    start: 4
+    end: 28
+    year: 2021
+    doi: 10.1287/trsc.2020.0985
+  - type: article
+    title: "Bucket Graph Meta-Solver for the Resource Constrained Shortest Path Problem"
+    authors:
+      - family-names: Sadykov
+        given-names: Ruslan
+      - family-names: Froger
+        given-names: Aurélien
+      - family-names: Uchoa
+        given-names: Eduardo
+      - family-names: Pessoa
+        given-names: Artur
+      - family-names: Bulhoes
+        given-names: Teobaldo
+      - family-names: "de Araujo"
+        given-names: Daniel
+    year: 2026
+    url: "https://inria.hal.science/hal-05486295v2"
+  - type: article
+    title: "A parallel pull labelling algorithm for the resource constrained shortest path problem"
+    authors:
+      - family-names: Petersen
+        given-names: Bjørn
+      - family-names: Spoorendonk
+        given-names: Simon
+    year: 2025
+    url: "https://arxiv.org/abs/2511.01397"
+  - type: article
+    title: "A generic exact solver for vehicle routing and related problems"
+    authors:
+      - family-names: Pessoa
+        given-names: Artur
+      - family-names: Sadykov
+        given-names: Ruslan
+      - family-names: Uchoa
+        given-names: Eduardo
+      - family-names: Vanderbeck
+        given-names: François
+    journal: "Mathematical Programming"
+    volume: 183
+    issue: "1-2"
+    start: 483
+    end: 523
+    year: 2020
+    doi: 10.1007/s10107-020-01523-z

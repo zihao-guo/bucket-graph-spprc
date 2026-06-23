@@ -6,7 +6,7 @@
 ///   <path>    Instance file or directory (recurse, detect type by extension)
 ///
 /// Options:
-///   --version       Print build git hash and exit
+///   --version       Print version and build git hash, then exit
 ///   --mono          Use mono solver (default: bidir)
 ///   --stage STAGE   heuristic1|heuristic2|exact (default: exact)
 ///   --ng K          ng-neighborhood size (default: 0/off for sppcc/vrp;
@@ -499,7 +499,7 @@ int main(int argc, char** argv) {
 
     for (int i = 1; i < argc; ++i) {
         if (std::strcmp(argv[i], "--version") == 0) {
-            std::printf("bgspprc %s\n", BGSPPRC_GIT_HASH);
+            std::printf("bgspprc %s (%s)\n", BGSPPRC_VERSION, BGSPPRC_GIT_HASH);
             return 0;
         } else if (std::strcmp(argv[i], "--mono") == 0) {
             opts.bidir = false;
@@ -551,7 +551,7 @@ int main(int argc, char** argv) {
         std::fprintf(stderr,
                      "Usage: bgspprc-solve [OPTIONS] <path>...\n"
                      "Options:\n"
-                     "  --version       Print build git hash and exit\n"
+                     "  --version       Print version and build git hash, then exit\n"
                      "  --mono          Use mono solver (default: bidir)\n"
                      "  --stage STAGE   heuristic1|heuristic2|exact (default: exact)\n"
                      "  --ng K          ng-neighborhood size (default: 0/off for sppcc/vrp;\n"

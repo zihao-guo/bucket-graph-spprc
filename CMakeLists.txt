@@ -1,5 +1,5 @@
 cmake_minimum_required(VERSION 3.25)
-project(bgspprc LANGUAGES CXX)
+project(bgspprc VERSION 0.1.0 LANGUAGES CXX)
 
 # Emit compile_commands.json for clang-tidy and IDEs, but only when we
 # are the top-level project — otherwise a downstream consumer embedding
@@ -43,6 +43,7 @@ if(BGSPPRC_BUILD_CLI)
         BYPRODUCTS ${BGSPPRC_VERSION_HEADER}
         COMMAND ${CMAKE_COMMAND}
             -DSRC_DIR=${CMAKE_CURRENT_SOURCE_DIR}
+            -DBGSPPRC_VERSION=${PROJECT_VERSION}
             -DVERSION_IN=${CMAKE_CURRENT_SOURCE_DIR}/cli/version.h.in
             -DVERSION_OUT=${BGSPPRC_VERSION_HEADER}
             -P ${CMAKE_CURRENT_SOURCE_DIR}/cmake/generate_version.cmake

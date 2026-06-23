@@ -1,0 +1,44 @@
+{
+  "upload_type": "software",
+  "title": "bucket-graph-spprc: a header-only C++23 bucket graph labeling library for the SPPRC",
+  "description": "Header-only C++23 template library implementing the bucket graph labeling algorithm for the Shortest Path Problem with Resource Constraints (SPPRC) and vehicle routing variants. Based on Sadykov, Uchoa & Pessoa (2021) with extensions from the bucket graph meta-solver (Sadykov et al. 2026).",
+  "license": "mit",
+  "creators": [
+    {
+      "name": "Spoorendonk, Simon",
+      "orcid": "0009-0007-4304-6956"
+    }
+  ],
+  "keywords": [
+    "SPPRC",
+    "RCSPP",
+    "resource constrained shortest path problem",
+    "vehicle routing",
+    "labeling algorithm",
+    "bucket graph",
+    "column generation",
+    "C++23"
+  ],
+  "related_identifiers": [
+    {
+      "identifier": "10.1287/trsc.2020.0985",
+      "relation": "references",
+      "scheme": "doi"
+    },
+    {
+      "identifier": "https://inria.hal.science/hal-05486295v2",
+      "relation": "references",
+      "scheme": "url"
+    },
+    {
+      "identifier": "2511.01397",
+      "relation": "references",
+      "scheme": "arxiv"
+    },
+    {
+      "identifier": "10.1007/s10107-020-01523-z",
+      "relation": "references",
+      "scheme": "doi"
+    }
+  ]
+}

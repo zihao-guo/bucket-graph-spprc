@@ -204,7 +204,7 @@ Arguments:
   <path>    Instance file or directory (recurse, detect type by extension)
 
 Options:
-  --version       Print build git hash and exit
+  --version       Print version and build git hash, then exit
   --mono          Use mono solver (default: bidir)
   --stage STAGE   heuristic1|heuristic2|exact (default: exact)
   --ng K          ng-neighborhood size (default: 0/off for sppcc/vrp;
@@ -232,6 +232,16 @@ ctest --test-dir build
 # Run tests matching a pattern
 ./build/test_runner "*NgPath*"
 ```
+
+## Citation
+
+If you use this software, please cite it. Release metadata lives in
+[`CITATION.cff`](CITATION.cff); GitHub renders a "Cite this repository" button from it.
+
+<!-- DOI: filled in after the first Zenodo release. Add the concept-DOI badge to the
+     header badges above and the citation line here, e.g.:
+     [![DOI](https://zenodo.org/badge/DOI/10.5281/zenodo.XXXXXXX.svg)](https://doi.org/10.5281/zenodo.XXXXXXX)
+     Spoorendonk, S. (2026). bucket-graph-spprc (v0.1.0). Zenodo. https://doi.org/10.5281/zenodo.XXXXXXX -->
 
 ## References
 
