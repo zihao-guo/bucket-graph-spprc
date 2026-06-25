@@ -2,11 +2,12 @@
 # run_benchmarks.sh — Run bgspprc-solve on benchmark instances and produce CSV results.
 #
 # Runs bgspprc-solve on instance files (.sppcc/.vrp/.graph), parses stdout,
-# and writes rows to benchmarks/bgspprc.csv (one row per instance+set+ng+mode
-# combo, replaced on re-run).
+# and writes rows to outs/<task>_bgspprc/<timestamp>/bgspprc.csv (one row per
+# instance+set+ng+mode combo, replaced on re-run).
 #
 # Usage:
-#   ./benchmarks/run_benchmarks.sh [--ng K] [--mode M] [--timeout S] [PATH...]
+#   ./benchmarks/run_benchmarks.sh [--ng K] [--mode M] [--timeout S]
+#                                [--task-name NAME] [--out-dir DIR] [PATH...]
 #
 # Arguments:
 #   PATH           Instance file or directory of instances.
@@ -26,13 +27,20 @@
 #                    para_bidir       → bgspprc-solve        (defaults)
 #   --max-paths N  Pass --max-paths N to solver.
 #   --timeout S    Per-instance timeout in seconds (default: 120).
+#   --task-name N  Task name under outs/ (default: inferred from input set).
+#                  The suffix _bgspprc is added if missing.
+#   --out-dir DIR  Output directory (default:
+#                  outs/<task-name>/<BGSPPRC_RUN_ID or UTC timestamp>).
 #
 # Environment:
 #   SOLVE          Path to SIMD-on solver    (default: ./build/bgspprc-solve).
 #   SOLVE_NOSIMD   Path to SIMD-off solver   (default: ./build/bgspprc-solve-nosimd).
+#   BGSPPRC_TASK_NAME  Same as --task-name.
+#   BGSPPRC_RUN_ID     Timestamp/run id to reuse across multiple script calls.
+#   BGSPPRC_OUT_DIR    Same as --out-dir.
 #
 # Output:
-#   benchmarks/bgspprc.csv — CSV with columns:
+#   <out-dir>/bgspprc.csv — CSV with columns:
 #     instance, set, ng, mode, cost, paths, time_s, timestamp
 #   Existing rows for the same (instance, set, ng, mode) are replaced;
 #   other rows preserved.
@@ -60,7 +68,10 @@ SCRIPTDIR="$(cd "$(dirname "$0")" && pwd)"
 REPODIR="$(cd "$SCRIPTDIR/.." && pwd)"
 SOLVE="${SOLVE:-$REPODIR/build/bgspprc-solve}"
 SOLVE_NOSIMD="${SOLVE_NOSIMD:-$REPODIR/build/bgspprc-solve-nosimd}"
-CSV="${SCRIPTDIR}/bgspprc.csv"
+TASK_NAME="${BGSPPRC_TASK_NAME:-}"
+RUN_ID="${BGSPPRC_RUN_ID:-}"
+OUT_DIR="${BGSPPRC_OUT_DIR:-}"
+CSV=""
 
 # ── Args ──
 NG_FLAG=()
@@ -75,6 +86,8 @@ while [[ $# -gt 0 ]]; do
     --mode)      MODE="$2"; shift 2 ;;
     --max-paths) MAX_PATHS_FLAG=(--max-paths "$2"); shift 2 ;;
     --timeout)   TIMEOUT="$2"; shift 2 ;;
+    --task-name) TASK_NAME="$2"; shift 2 ;;
+    --out-dir)   OUT_DIR="$2"; shift 2 ;;
     -h|--help)   usage ;;
     *)           PATHS+=("$1"); shift ;;
   esac
@@ -108,6 +121,53 @@ fi
 if [[ ${#PATHS[@]} -eq 0 ]]; then
   PATHS=("$SCRIPTDIR/instances/spprclib" "$SCRIPTDIR/instances/roberti")
 fi
+
+sanitize_name() {
+  echo "$1" | sed 's/[^A-Za-z0-9._-]/_/g'
+}
+
+infer_task_base() {
+  local names=()
+  local seen=" "
+  local p name
+  for p in "$@"; do
+    if [[ -f "$p" ]]; then
+      name="$(basename "$(dirname "$p")")"
+    else
+      name="$(basename "$p")"
+    fi
+    name="$(sanitize_name "$name")"
+    if [[ "$seen" != *" $name "* ]]; then
+      names+=("$name")
+      seen+=" $name "
+    fi
+  done
+
+  if [[ ${#names[@]} -eq 1 ]]; then
+    echo "${names[0]}"
+  else
+    echo "mixed"
+  fi
+}
+
+if [[ -z "$TASK_NAME" ]]; then
+  TASK_NAME="$(infer_task_base "${PATHS[@]}")"
+fi
+TASK_NAME="$(sanitize_name "$TASK_NAME")"
+if [[ "$TASK_NAME" != *_bgspprc ]]; then
+  TASK_NAME="${TASK_NAME}_bgspprc"
+fi
+
+if [[ -z "$RUN_ID" ]]; then
+  RUN_ID="$(date -u +%Y%m%d_%H%M%S)"
+fi
+RUN_ID="$(sanitize_name "$RUN_ID")"
+
+if [[ -z "$OUT_DIR" ]]; then
+  OUT_DIR="$REPODIR/outs/$TASK_NAME/$RUN_ID"
+fi
+mkdir -p "$OUT_DIR"
+CSV="$OUT_DIR/bgspprc.csv"
 
 # ── Collect instance files ──
 collect_files() {
